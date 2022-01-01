@@ -76,9 +76,65 @@ async function run() {
             res.json(result)
         })
 
+
+        // learner 
+        app.post('/learner', async (req, res) => {
+            // console.log(req.body)
+            console.log(req.files)
+            const name = req.body.name;
+            const email = req.body.email;
+            const age = req.body.age;
+            const address = req.body.address;
+            const phone = req.body.phone;
+
+            const pass1 = req.body.pass1;
+            const pass2 = req.body.pass2;
+            const type = req.body.type;
+            const role = req.body.role;
+
+
+            const nid = req.files.nid;
+            const profile = req.files.profile;
+
+
+            const nidData = nid.data;
+            const profileData = profile.data;
+
+
+            const encodeNid = nidData.toString('base64');
+            const encodeProfile = profileData.toString('base64');
+
+
+            const nidBuffer = Buffer.from(encodeNid, 'base64');
+            const profileBuffer = Buffer.from(encodeProfile, 'base64');
+            const rider = {
+                name,
+                email,
+                age,
+                address,
+                phone,
+
+                pass1,
+                pass2,
+                type,
+                role,
+
+                nid: nidBuffer,
+                profile: profileBuffer
+            }
+            const result = await ridersCollection.insertOne(rider);
+            res.json(result)
+        })
         app.get('/users', async (req, res) => {
             const cursor = ridersCollection.find({});
             const result = await cursor.toArray();
+            res.json(result)
+        })
+        app.get('/profile/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+            const result = await ridersCollection.findOne(query);
+            console.log('user', result)
             res.json(result)
         })
         app.get('/admin/:email', async (req, res) => {
