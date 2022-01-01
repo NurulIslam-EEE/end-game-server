@@ -81,7 +81,17 @@ async function run() {
             const result = await cursor.toArray();
             res.json(result)
         })
-
+        app.get('/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+            const cursor = await ridersCollection.findOne(query);
+            let isAdmin = false;
+            if (cursor.role === 'admin') {
+                isAdmin = true
+            }
+            console.log(cursor)
+            res.json({ admin: isAdmin })
+        })
     }
     finally {
         // await client.close();
